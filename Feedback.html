@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+   <title>Readify — Feedback</title>
+  <meta name="description" content="Readify — reading tracker, recommender and ambient reading experience." />
+  <link rel="icon" href="favicon.ico" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F6AE2D">
+
+</head>
+<body>
+  <!-- Header / NAV (kept persistent across pages) -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="Home.html">
+        <svg class="brand-logo" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true">
+          <circle cx="70" cy="40" r="28" fill="var(--accent)" />
+          <text x="30%" y="105%" font-size="120" text-anchor="middle" fill="white" font-family="Inter, sans-serif" font-weight="1000">R</text>
+        </svg>
+        <span class="brand-text">Readify</span>
+      </a>
+
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-list">
+          <li><a href="Home.html">Home</a></li>
+          <li><a href="Explorer.html">Explorer</a></li>
+          <li><a href="Tracker.html">Tracker</a></li>
+          <li><a href="Recommender.html">Recommender</a></li>
+          <li><a href="Flow.html">Flow</a></li>
+          <li><a class="active" href="Feedback.html">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Open navigation" aria-expanded="false">
+        <span class="hamburger">
+          <span class="bar bar1"></span>
+          <span class="bar bar2"></span>
+          <span class="bar bar3"></span>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="container" style="padding:2.2rem 0;">
+      <h1 style="margin:0 0 .6rem 0; font-family:'Merriweather', serif;">Feedback</h1>
+      <p class="muted" style="max-width:70ch; margin:0 0 1.2rem 0;">
+        Send us your thoughts. Your feedback is validated, saved to <code>localStorage</code>, and you’ll see a confirmation message.
+      </p>
+
+      <!-- Feedback Form -->
+      <div class="quote-card" style="padding:1.2rem;">
+        <h2 style="margin:0 0 .8rem 0;">Contact Form</h2>
+
+        <form id="feedbackForm" class="feedback-form" novalidate>
+          <div class="feedback-grid">
+            <div>
+              <label for="fbName" class="muted small" style="display:block; font-weight:700; margin-bottom:.35rem;">Name</label>
+              <input id="fbName" type="text" placeholder="Your name" required />
+            </div>
+
+            <div>
+              <label for="fbEmail" class="muted small" style="display:block; font-weight:700; margin-bottom:.35rem;">Email</label>
+              <input id="fbEmail" type="email" placeholder="you@domain.com" required />
+            </div>
+          </div>
+
+          <div style="margin-top:1rem;">
+            <label for="fbMessage" class="muted small" style="display:block; font-weight:700; margin-bottom:.35rem;">Message</label>
+            <textarea id="fbMessage" rows="5" placeholder="Type your message..." required></textarea>
+          </div>
+
+          <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem;">
+            <button class="btn primary" type="submit">Submit Feedback</button>
+            <button id="clearFeedbackBtn" class="btn ghost" type="button">Clear Saved Feedback</button>
+          </div>
+
+          <p id="feedbackMsg" class="muted small" style="margin:.8rem 0 0 0;" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <!-- FAQ Accordion -->
+      <div class="quote-card" style="padding:1.2rem; margin-top:1rem;">
+        <h2 style="margin:0 0 .8rem 0;">FAQs</h2>
+
+        <div class="faq" id="faq">
+          <button class="faq-item" type="button" aria-expanded="false">
+            <span class="faq-q">How do I save books to my reading list?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-panel" hidden>
+            <p class="muted" style="margin:0;">
+              Go to <strong>Recommender</strong>, pick a book, then click <strong>Save to Reading List</strong>. It’s stored in localStorage.
+            </p>
+          </div>
+
+          <button class="faq-item" type="button" aria-expanded="false">
+            <span class="faq-q">Does the site work offline?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-panel" hidden>
+            <p class="muted" style="margin:0;">
+              Once the PWA manifest + service worker are added, key pages can work offline. (We can add this next.)
+            </p>
+          </div>
+
+          <button class="faq-item" type="button" aria-expanded="false">
+            <span class="faq-q">Where is my tracker progress stored?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-panel" hidden>
+            <p class="muted" style="margin:0;">
+              Your tracker progress is stored locally in your browser using localStorage so it persists after refresh.
+            </p>
+          </div>
+
+          <button class="faq-item" type="button" aria-expanded="false">
+            <span class="faq-q">Can I remove completed books from Flow?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-panel" hidden>
+            <p class="muted" style="margin:0;">
+              Yes. In <strong>Flow</strong>, you can remove individual items or clear the entire list.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer (same template) -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <h4>Readify</h4>
+        <p>Tools and features to avoid reading slumps.</p>
+        <nav class="footer-nav">
+          <a href="Home.html">Home</a>
+          <a href="Explorer.html">Explorer</a>
+          <a href="Tracker.html">Tracker</a>
+        </nav>
+      </div>
+
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Guides</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col newsletter-col">
+        <h4>Newsletter</h4>
+        <p>Get reading tips and new features. We store your email in localStorage for demo purposes.</p>
+        <form id="newsletterForm" class="newsletter-form" novalidate>
+          <label for="newsletterEmail" class="sr-only">Email address</label>
+          <input id="newsletterEmail" name="email" type="email" placeholder="you@domain.com" required>
+          <button type="submit" class="btn primary">Subscribe</button>
+        </form>
+        <p id="newsletterMsg" class="muted small"></p>
+      </div>
+    </div>
+
+    <div class="container copyright">
+      <small>© <span id="year"></span> Readify</small>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

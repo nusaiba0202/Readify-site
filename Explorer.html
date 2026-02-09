@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Readify — Explorer</title>
+  <meta name="description" content="Readify — reading tracker, recommender and ambient reading experience." />
+  <link rel="icon" href="favicon.ico" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#F6AE2D">
+
+</head>
+<body>
+  <!-- Header / NAV (kept persistent across pages) -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="Home.html">
+        <svg class="brand-logo" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true">
+          <circle cx="70" cy="40" r="28" fill="var(--accent)" />
+          <text x="30%" y="105%" font-size="120" text-anchor="middle" fill="white" font-family="Inter, sans-serif" font-weight="1000">R</text>
+        </svg>
+        <span class="brand-text">Readify</span>
+      </a>
+
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-list">
+          <li><a href="Home.html">Home</a></li>
+          <li><a href="Explorer.html" class="active">Explorer</a></li>
+          <li><a href="Tracker.html">Tracker</a></li>
+          <li><a href="Recommender.html">Recommender</a></li>
+          <li><a href="Flow.html">Flow</a></li>
+          <li><a href="Feedback.html">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Open navigation" aria-expanded="false">
+        <span class="hamburger">
+          <span class="bar bar1"></span>
+          <span class="bar bar2"></span>
+          <span class="bar bar3"></span>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="container" style="padding:2.2rem 0;">
+      <h1 style="margin-top:0; font-family:'Merriweather', serif;">Explorer</h1>
+      <p class="muted" style="max-width:60ch;">Browse our curated selection. Use filters to narrow by genre, title, or author. Click any book for details, sequels/prequels and reviews.</p>
+
+      <!-- Filters -->
+      <div class="filters" style="display:flex; gap:0.8rem; margin:1rem 0; flex-wrap:wrap; align-items:center;">
+        <input id="searchInput" type="search" placeholder="Search by title or author" style="padding:.6rem .9rem; border-radius:10px; border:1px solid rgba(255,255,255,0.04); min-width:220px; background:transparent; color:var(--text);">
+        <select id="genreSelect" style="padding:.6rem .9rem; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:#021a3f; color:var(--text);">
+          <option value="">All genres</option>
+        </select>
+        <button id="clearFilters" class="btn ghost">Clear</button>
+      </div>
+
+      <!-- Book Grid -->
+      <div id="booksGrid" class="container" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:1rem; padding:0; margin-top:1rem;">
+        <!-- Cards will be injected here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal for book details -->
+  <div id="bookModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" style="position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:200;">
+    <div class="modal-backdrop" id="modalBackdrop" style="position:absolute; inset:0; background:rgba(3,6,10,0.7)"></div>
+    <div class="modal-panel" role="document" style="position:relative; max-width:880px; width:95%; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:1.2rem; border:1px solid rgba(255,255,255,0.03); z-index:201; background-color: black">
+      <button id="closeModal" class="btn ghost" style="position:absolute; right:14px; top:14px;">Close</button>
+      <div style="display:grid; grid-template-columns: 180px 1fr; gap:1rem; align-items:start;">
+        <img id="modalCover" src="img_book/book1.png" alt="Cover" style="width:160px; border-radius:10px; box-shadow:0 12px 36px rgba(0,0,0,0.5);">
+        <div>
+          <h2 id="modalTitle" style="margin:0 0 .25rem 0;"></h2>
+          <p id="modalAuthor" class="muted" style="margin:0 0 .6rem 0;"></p>
+          <div id="modalSynopsis" style="margin-bottom:1rem; color:var(--text)"></div>
+
+          <!-- Sequels/Prequels -->
+          <div style="margin-bottom:1rem;">
+            <strong>Series:</strong>
+            <div style="margin-top:.4rem;">
+              <div id="modalPrequels" class="muted small"></div>
+              <div id="modalSequels" class="muted small"></div>
+            </div>
+          </div>
+
+          <!-- Ratings Table -->
+          <div style="margin-top:.4rem;">
+            <h4 style="margin:.2rem 0;">Ratings & Reviews</h4>
+            <div style="overflow:auto; max-height:220px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); padding:.6rem; background:rgba(255,255,255,0.01);">
+              <table id="reviewsTable" style="width:100%; border-collapse:collapse; color:var(--text);">
+                <thead>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                    <th style="text-align:left; padding:.4rem .6rem;">Reviewer</th>
+                    <th style="text-align:left; padding:.4rem .6rem;">Rating</th>
+                    <th style="text-align:left; padding:.4rem .6rem;">Comment</th>
+                  </tr>
+                </thead>
+                <tbody id="reviewsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (same template as Home) -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <h4>Readify</h4>
+        <p>Tools and features to help you enjoy reading more often.</p>
+        <nav class="footer-nav">
+          <a href="Home.html">Home</a>
+          <a href="Explorer.html">Explorer</a>
+          <a href="Tracker.html">Tracker</a>
+        </nav>
+      </div>
+
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Guides</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col newsletter-col">
+        <h4>Newsletter</h4>
+        <p>Get reading tips and new features.</p>
+        <form id="footerNewsletterForm" class="newsletter-form" novalidate>
+          <label for="footerNewsletterEmail" class="sr-only">Email address</label>
+          <input id="footerNewsletterEmail" name="email" type="email" placeholder="you@domain.com" required>
+          <button type="submit" class="btn primary">Subscribe</button>
+        </form>
+        <p id="footerNewsletterMsg" class="muted small"></p>
+      </div>
+    </div>
+
+    <div class="container copyright">
+      <small>© <span id="explorerYear"></span> Readify</small>
+    </div>
+  </footer>
+	<script src="books.js"></script>
+
+  <!-- Explorer script: data + logic -->
+  <script>
+    /******************************************************
+     * Explorer page JS
+     * - book data (JS objects)
+     * - render cards
+     * - filter/search
+     * - modal with synopsis, sequels/prequels, reviews table
+     ******************************************************/
+
+    /* Lightweight localStorage helpers (will not override if already defined) */
+    if (typeof saveToLocalStorage !== 'function') {
+      function saveToLocalStorage(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) { console.error(e); }
+      }
+    }
+    if (typeof loadFromLocalStorage !== 'function') {
+      function loadFromLocalStorage(key, defaultVal = null) {
+        try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : defaultVal; } catch(e){ console.error(e); return defaultVal; }
+      }
+    }
+
+    /* ---------- Sample dataset (5 books) ---------- */
+    const books = [
+      {
+        id: 1,
+        title: "The Little Prince",
+        author: "Antoine de Saint-Exupéry",
+        genre: "Fable",
+        cover: "img_book/book1.png",
+        synopsis: "A poetic tale of a pilot stranded in the desert who meets a young prince visiting from another planet. A meditation on loneliness, friendship, love and loss.",
+        prequels: ["Test1"],
+    sequels: ["Test2", "Test3"],
+        reviews: [
+          { reviewer: "Lena", rating: 5, comment: "Timeless and moving." },
+          { reviewer: "Mark", rating: 4, comment: "Simple but profound." }
+        ]
+      },
+      {
+        id: 2,
+        title: "The Fellowship of the Ring",
+        author: "J.R.R. Tolkien",
+        genre: "Fantasy",
+        cover: "img_book/book2.png",
+        synopsis: "The first volume of the epic Lord of the Rings, following Frodo Baggins as he begins his journey to destroy the One Ring.",
+        prequels: ["The Hobbit"],
+        sequels: ["The Two Towers", "The Return of the King"],
+        reviews: [
+          { reviewer: "Carl", rating: 5, comment: "An epic beginning." },
+          { reviewer: "Ava", rating: 4, comment: "Rich world-building." }
+        ]
+      },
+      {
+        id: 3,
+        title: "Norwegian Wood",
+        author: "Haruki Murakami",
+        genre: "Fiction",
+        cover: "img_book/book3.png",
+        synopsis: "A coming-of-age story set in 1960s Tokyo that explores love, loss and mental illness through the eyes of Toru Watanabe.",
+        prequels: [],
+        sequels: [],
+        reviews: [
+          { reviewer: "Priya", rating: 4, comment: "Melancholic and beautiful." }
+        ]
+      },
+      {
+        id: 4,
+        title: "Beloved",
+        author: "Toni Morrison",
+        genre: "Historical Fiction",
+        cover: "img_book/book4.png",
+        synopsis: "A powerful novel about an escaped enslaved woman, Sethe, and the haunting legacy of slavery and memory.",
+        prequels: [],
+        sequels: [],
+        reviews: [
+          { reviewer: "Jamal", rating: 5, comment: "Haunting and necessary." },
+          { reviewer: "Olivia", rating: 5, comment: "Incredibly written." }
+        ]
+      },
+      {
+        id: 5,
+        title: "Things Fall Apart",
+        author: "Chinua Achebe",
+        genre: "Classic",
+        cover: "img_book/book5.png",
+        synopsis: "A novel about the fall of an Igbo community under colonial pressure and the life of Okonkwo, a respected leader.",
+        prequels: [],
+        sequels: [],
+        reviews: [
+          { reviewer: "Diego", rating: 5, comment: "A cornerstone of African literature." }
+        ]
+      }
+    ];
+
+    /* ---------- DOM references ---------- */
+    const booksGrid = document.getElementById('booksGrid');
+    const genreSelect = document.getElementById('genreSelect');
+    const searchInput = document.getElementById('searchInput');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+
+    const modal = document.getElementById('bookModal');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const closeModalBtn = document.getElementById('closeModal');
+    const modalCover = document.getElementById('modalCover');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalAuthor = document.getElementById('modalAuthor');
+    const modalSynopsis = document.getElementById('modalSynopsis');
+    const modalPrequels = document.getElementById('modalPrequels');
+    const modalSequels = document.getElementById('modalSequels');
+    const reviewsBody = document.getElementById('reviewsBody');
+
+    /* ---------- Helper: render a single card ---------- */
+    function createBookCard(book) {
+      const card = document.createElement('article');
+      card.className = 'quote-card'; // reuse card styling
+      card.style.display = 'flex';
+      card.style.flexDirection = 'column';
+      card.style.gap = '0.6rem';
+      card.style.padding = '0.6rem';
+      card.style.cursor = 'pointer';
+
+      const img = document.createElement('img');
+      img.src = book.cover;
+      img.alt = `${book.title} cover`;
+      img.style.width = '100%';
+      img.style.height = '300px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '10px';
+      img.loading = 'lazy';
+      card.appendChild(img);
+
+      const h = document.createElement('h3');
+      h.textContent = book.title;
+      h.style.margin = '0';
+      h.style.fontSize = '1rem';
+      h.style.fontWeight = '700';
+      card.appendChild(h);
+
+      const a = document.createElement('p');
+      a.textContent = book.author;
+      a.className = 'muted';
+      a.style.margin = '0';
+      a.style.fontSize = '.92rem';
+      card.appendChild(a);
+
+      const g = document.createElement('p');
+      g.textContent = book.genre;
+      g.className = 'small muted';
+      g.style.margin = '0';
+      card.appendChild(g);
+
+      // click to open modal
+      card.addEventListener('click', () => openBookModal(book.id));
+
+      return card;
+    }
+
+    /* ---------- Render grid ---------- */
+    function renderBooksGrid(list) {
+      booksGrid.innerHTML = '';
+      if (!list.length) {
+        const empty = document.createElement('p');
+        empty.textContent = 'No books match your search.';
+        empty.className = 'muted';
+        booksGrid.appendChild(empty);
+        return;
+      }
+      list.forEach(book => {
+        const col = document.createElement('div');
+        col.appendChild(createBookCard(book));
+        booksGrid.appendChild(col);
+      });
+    }
+
+    /* ---------- Build genre options ---------- */
+    function populateGenres() {
+      const genres = Array.from(new Set(books.map(b => b.genre))).sort();
+      genres.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        genreSelect.appendChild(opt);
+      });
+    }
+
+    /* ---------- Filter logic ---------- */
+    function filterBooks() {
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const genre = genreSelect.value;
+      const filtered = books.filter(book => {
+        const matchesGenre = genre ? book.genre === genre : true;
+        const matchesQuery = q
+          ? (book.title.toLowerCase().includes(q) || book.author.toLowerCase().includes(q))
+          : true;
+        return matchesGenre && matchesQuery;
+      });
+      renderBooksGrid(filtered);
+    }
+
+    /* ---------- Modal logic ---------- */
+    function openBookModal(bookId) {
+      const book = books.find(b => b.id === bookId);
+      if (!book) return;
+      modalCover.src = book.cover;
+      modalTitle.textContent = book.title;
+      modalAuthor.textContent = book.author;
+      modalSynopsis.textContent = book.synopsis;
+
+      // Sequels / Prequels lists
+      modalPrequels.innerHTML = '';
+      modalSequels.innerHTML = '';
+      if (book.prequels && book.prequels.length) {
+        modalPrequels.innerHTML = `<strong>Prequels:</strong> ${book.prequels.join(', ')}`;
+      } else {
+        modalPrequels.innerHTML = `<strong>Prequels:</strong> —`;
+      }
+      if (book.sequels && book.sequels.length) {
+        modalSequels.innerHTML = `<strong>Sequels:</strong> ${book.sequels.join(', ')}`;
+      } else {
+        modalSequels.innerHTML = `<strong>Sequels:</strong> —`;
+      }
+
+      // Reviews table
+      reviewsBody.innerHTML = '';
+      if (book.reviews && book.reviews.length) {
+        book.reviews.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="padding:.45rem .6rem; border-bottom:1px solid rgba(255,255,255,0.03)">${escapeHtml(r.reviewer)}</td>
+                          <td style="padding:.45rem .6rem; border-bottom:1px solid rgba(255,255,255,0.03)">${r.rating}/5</td>
+                          <td style="padding:.45rem .6rem; border-bottom:1px solid rgba(255,255,255,0.03)">${escapeHtml(r.comment)}</td>`;
+          reviewsBody.appendChild(tr);
+        });
+      } else {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="3" style="padding:.6rem" class="muted">No reviews yet.</td>`;
+        reviewsBody.appendChild(tr);
+      }
+
+      // show modal
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+
+      // trap focus if needed (lightweight)
+      closeModalBtn.focus();
+    }
+
+    function closeBookModal() {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ---------- small utility ---------- */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function (m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+    }
+
+    /* ---------- Events ---------- */
+    searchInput.addEventListener('input', filterBooks);
+    genreSelect.addEventListener('change', filterBooks);
+    clearFiltersBtn.addEventListener('click', () => { searchInput.value=''; genreSelect.value=''; filterBooks(); });
+
+    // modal close events
+    closeModalBtn.addEventListener('click', closeBookModal);
+    modalBackdrop.addEventListener('click', closeBookModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBookModal(); });
+
+    // footer newsletter (mirrors Home behavior)
+    const footerNewsletterForm = document.getElementById('footerNewsletterForm');
+    const footerNewsletterMsg = document.getElementById('footerNewsletterMsg');
+    footerNewsletterForm.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const email = document.getElementById('footerNewsletterEmail').value.trim();
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(email)) {
+        footerNewsletterMsg.textContent = 'Please enter a valid email.';
+        footerNewsletterMsg.style.color = '#ffb3b3';
+        return;
+      }
+      const saved = loadFromLocalStorage('newsletterEmails', []);
+      if (!Array.isArray(saved)) saveToLocalStorage('newsletterEmails', [email]);
+      else { if (!saved.includes(email)) saved.push(email); saveToLocalStorage('newsletterEmails', saved); }
+      footerNewsletterMsg.textContent = 'Thanks — saved locally.';
+      footerNewsletterMsg.style.color = '#9fe6b9';
+      footerNewsletterForm.reset();
+      setTimeout(()=> footerNewsletterMsg.textContent='', 3000);
+    });
+
+    /* ---------- Init ---------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      populateGenres();
+      renderBooksGrid(books);
+      document.getElementById('explorerYear').textContent = new Date().getFullYear();
+
+      // wire header hamburger from main nav (if present)
+      const navToggle = document.getElementById('navToggle');
+      const mainNav = document.getElementById('mainNav');
+      if (navToggle && mainNav) {
+        navToggle.addEventListener('click', function () {
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', String(!expanded));
+          const list = mainNav.querySelector('.nav-list');
+          if (!expanded) { list.classList.add('show'); } else { list.classList.remove('show'); }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
